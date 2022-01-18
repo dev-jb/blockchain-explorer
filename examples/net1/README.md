@@ -17,7 +17,7 @@ As consequence, it needs to be references always as (see the example below):
 }
 ```
 For a complete **Hyperledger Fabric** network configuration file see examples:
-https://raw.githubusercontent.com/hyperledger/blockchain-explorer/master/app/platform/fabric/config.json
+https://raw.githubusercontent.com/hyperledger/blockchain-explorer/main/app/platform/fabric/config.json
 
 ## Docker networking
 
@@ -110,7 +110,6 @@ A complete configuration **example** file is shown below for 2 ORG Blockchain in
       "organizations": {
         "Org1MSP": {
           "mspid": "Org1MSP",
-          "fullpath": false,
           "adminPrivateKey": {
             "path":
               "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"
@@ -237,7 +236,6 @@ Note: Make sure you put the right node IPs, ports and certs paths before running
       "organizations": {
         "Org1MSP": {
           "mspid": "Org1MSP",
-          "fullpath": false,
           "adminPrivateKey": {
             "path":
               "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"

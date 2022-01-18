@@ -2,8 +2,8 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import compose from 'recompose/compose';
+//import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
@@ -122,6 +122,29 @@ export const Main = props => {
 		getTransactionListSearch
 	};
 
+	const [transactionId, setTransactionId] = useState('');
+
+	useEffect(() => {
+		let windowUrl = window.location.search;
+		let queryParams = new URLSearchParams(windowUrl);
+		if (queryParams.get('tab')) {
+			setTransactionId(queryParams.get('transId'));
+			const { history } = props;
+			let routePath = '/' + queryParams.get('tab');
+			history.replace(routePath);
+		}
+	}, []);
+
+	function removeTransactionId() {
+		let windowUrl = window.location.search;
+		let queryParams = new URLSearchParams(windowUrl);
+		if (queryParams.get('tab')) {
+			queryParams.delete('tab');
+			queryParams.delete('transId');
+		}
+		setTransactionId('');
+	}
+
 	return (
 		<Router>
 			<div className={classes.main}>
@@ -165,7 +188,11 @@ export const Main = props => {
 						exact
 						path="/transactions"
 						render={routeprops => (
-							<TransactionsView {...{ ...transactionsViewProps, ...routeprops }} />
+							<TransactionsView
+								{...{ ...transactionsViewProps, ...routeprops }}
+								transactionId={transactionId}
+								removeTransactionId={removeTransactionId}
+							/>
 						)}
 					/>
 					<Route exact render={routeprops => <PageNotFound {...routeprops} />} />
@@ -189,29 +216,27 @@ Main.propTypes = {
 	transactionList: transactionListType.isRequired
 };
 
-export default compose(
-	withStyles(styles),
-	connect(
-		state => ({
-			blockList: blockListSelector(state),
-			chaincodeList: chaincodeListSelector(state),
-			channelList: channelListSelector(state),
-			channels: channelsSelector(state),
-			currentChannel: currentChannelSelector(state),
-			dashStats: dashStatsSelector(state),
-			peerList: peerListSelector(state),
-			peerStatus: peerStatusSelector(state),
-			transaction: transactionSelector(state),
-			transactionByOrg: transactionByOrgSelector(state),
-			transactionList: transactionListSelector(state),
-			blockListSearch: blockListSearchSelector(state),
-			transactionListSearch: transactionListSearchSelector(state),
-			blockActivity: blockActivitySelector(state)
-		}),
-		{
-			getTransaction: tableOperations.transaction,
-			getBlockListSearch: tableOperations.blockListSearch,
-			getTransactionListSearch: tableOperations.transactionListSearch
-		}
-	)
+const connectedComponent = connect(
+	state => ({
+		blockList: blockListSelector(state),
+		chaincodeList: chaincodeListSelector(state),
+		channelList: channelListSelector(state),
+		channels: channelsSelector(state),
+		currentChannel: currentChannelSelector(state),
+		dashStats: dashStatsSelector(state),
+		peerList: peerListSelector(state),
+		peerStatus: peerStatusSelector(state),
+		transaction: transactionSelector(state),
+		transactionByOrg: transactionByOrgSelector(state),
+		transactionList: transactionListSelector(state),
+		blockListSearch: blockListSearchSelector(state),
+		transactionListSearch: transactionListSearchSelector(state),
+		blockActivity: blockActivitySelector(state)
+	}),
+	{
+		getTransaction: tableOperations.transaction,
+		getBlockListSearch: tableOperations.blockListSearch,
+		getTransactionListSearch: tableOperations.transactionListSearch
+	}
 )(Main);
+export default withStyles(styles)(connectedComponent);

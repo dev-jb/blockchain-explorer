@@ -4,7 +4,6 @@
 
 import React, { Component } from 'react';
 
-import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -21,21 +20,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import { shape, string } from 'prop-types';
+import Container from '../Container';
 
 import { authSelectors, authOperations } from '../../state/redux/auth';
 
 const styles = theme => ({
-	container: {
-		width: 'auto',
-		display: 'block', // Fix IE 11 issue.
-		marginLeft: theme.spacing.unit * 3,
-		marginRight: theme.spacing.unit * 3,
-		[theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
-			width: 400,
-			marginLeft: 'auto',
-			marginRight: 'auto'
-		}
-	},
 	paper: {
 		display: 'flex',
 		flexDirection: 'column',
@@ -90,11 +79,23 @@ export class Register extends Component {
 				error: null,
 				value: ''
 			},
+			firstname: {
+				error: null,
+				value: ''
+			},
+			lastname: {
+				error: null,
+				value: ''
+			},
+			email: {
+				error: null,
+				value: ''
+			},
 			password: {
 				error: null,
 				value: ''
 			},
-			affiliation: {
+			password2: {
 				error: null,
 				value: ''
 			},
@@ -102,10 +103,12 @@ export class Register extends Component {
 				error: null,
 				value: ''
 			},
-			rolesList: ['admin', 'reader', 'user'],
+			rolesList: ['admin', 'user'],
 			error: '',
 			registered,
-			isLoading: false
+			isLoading: false,
+			allValid: false,
+			lastSaved: ''
 		};
 	}
 
@@ -124,41 +127,136 @@ export class Register extends Component {
 		this.setState({
 			[name]: { value }
 		});
+
+		let password2 = {};
+		if (name === 'password') {
+			if (
+				this.state.password2.value.length &&
+				value !== this.state.password2.value
+			) {
+				password2 = {
+					value: this.state.password2.value,
+					error: 'The password confirmation does not match.'
+				};
+			} else {
+				password2 = { value: this.state.password2.value, error: null };
+			}
+		} else if (name === 'password2') {
+			if (
+				this.state.password.value.length &&
+				value !== this.state.password.value
+			) {
+				password2 = { value, error: 'The password confirmation does not match.' };
+			} else {
+				password2 = { value, error: null };
+			}
+		} else {
+			password2 = this.state.password2;
+		}
+
+		this.setState({ password2 }, () => {
+			if (
+				this.state.user.value &&
+				this.state.password.value &&
+				this.state.password2.value &&
+				this.state.roles.value &&
+				!this.state.password2.error
+			) {
+				this.setState({ allValid: true });
+			} else if (this.state.allValid) {
+				this.setState({ allValid: false });
+			}
+		});
 	};
 
 	submitForm = async e => {
 		e.preventDefault();
 
-		const { register } = this.props;
-		const { user, password, affiliation, roles } = this.state;
+		const { register, userlist } = this.props;
+		const {
+			user,
+			password,
+			password2,
+			roles,
+			firstname,
+			lastname,
+			email
+		} = this.state;
 
 		const userInfo = {
 			user: user.value,
 			password: password.value,
-			affiliation: affiliation.value,
-			roles: roles.value
+			password2: password2.value,
+			roles: roles.value,
+			firstname: firstname.value,
+			lastname: lastname.value,
+			email: email.value
 		};
 
 		const info = await register(userInfo);
-
+		await userlist();
 		this.setState(() => ({ info }));
-
+		this.setState(() => ({ lastSaved: user.value }));
+		this.resetForm();
 		return true;
 	};
+	resetForm() {
+		const user = {
+			error: null,
+			value: ''
+		};
+		const firstname = {
+			error: null,
+			value: ''
+		};
+		const lastname = {
+			error: null,
+			value: ''
+		};
+		const email = {
+			error: null,
+			value: ''
+		};
+		const password = {
+			error: null,
+			value: ''
+		};
+		const password2 = {
+			error: null,
+			value: ''
+		};
+		const roles = {
+			error: null,
+			value: ''
+		};
+		this.setState({
+			user: user,
+			firstname: firstname,
+			lastname: lastname,
+			email: email,
+			password: password,
+			password2: password2,
+			roles: roles
+		});
+	}
 
 	render() {
 		const {
 			info,
 			user,
 			password,
-			affiliation,
+			password2,
 			roles,
+			firstname,
+			lastname,
+			email,
 			rolesList,
-			isLoading
+			isLoading,
+			lastSaved
 		} = this.state;
 		const { classes, error, onClose } = this.props;
 		return (
-			<div className={classes.container}>
+			<Container>
 				<Paper className={classes.paper}>
 					<Typography className={classes.title} component="h5" variant="headline">
 						Register User
@@ -195,6 +293,57 @@ export class Register extends Component {
 						</FormControl>
 						<FormControl margin="normal" required fullWidth>
 							<TextField
+								fullWidth
+								id="firstname"
+								name="firstname"
+								label="First name"
+								disabled={isLoading}
+								value={firstname.value}
+								onChange={e => this.handleChange(e)}
+								margin="normal"
+							/>
+							{firstname.error && (
+								<FormHelperText id="component-error-text" error>
+									{firstname.error}
+								</FormHelperText>
+							)}
+						</FormControl>
+						<FormControl margin="normal" required fullWidth>
+							<TextField
+								fullWidth
+								id="lastname"
+								name="lastname"
+								label="Last name"
+								disabled={isLoading}
+								value={lastname.value}
+								onChange={e => this.handleChange(e)}
+								margin="normal"
+							/>
+							{lastname.error && (
+								<FormHelperText id="component-error-text" error>
+									{lastname.error}
+								</FormHelperText>
+							)}
+						</FormControl>
+						<FormControl margin="normal" required fullWidth>
+							<TextField
+								fullWidth
+								id="email"
+								name="email"
+								label="E-mail address"
+								disabled={isLoading}
+								value={email.value}
+								onChange={e => this.handleChange(e)}
+								margin="normal"
+							/>
+							{email.error && (
+								<FormHelperText id="component-error-text" error>
+									{email.error}
+								</FormHelperText>
+							)}
+						</FormControl>
+						<FormControl margin="normal" required fullWidth>
+							<TextField
 								required
 								fullWidth
 								error={!!password.error}
@@ -215,20 +364,21 @@ export class Register extends Component {
 						</FormControl>
 						<FormControl margin="normal" required fullWidth>
 							<TextField
-								error={!!affiliation.error}
+								error={!!password2.error}
 								required
 								fullWidth
-								id="affiliation"
-								name="affiliation"
-								label="Affiliation"
+								id="password2"
+								type="password"
+								name="password2"
+								label="Password(confirm)"
 								disabled={isLoading}
-								value={affiliation.value}
+								value={password2.value}
 								onChange={e => this.handleChange(e)}
 								margin="normal"
 							/>
-							{affiliation.error && (
+							{password2.error && (
 								<FormHelperText id="component-error-text" error>
-									{affiliation.error}
+									{password2.error}
 								</FormHelperText>
 							)}
 						</FormControl>
@@ -264,14 +414,14 @@ export class Register extends Component {
 								{error}
 							</FormHelperText>
 						)}
-						{info && user.value && (
+						{info && lastSaved && (
 							<FormHelperText
 								id="component-error-text"
 								className={
 									info.status === 'success' ? classes.successtext : classes.errortext
 								}
 							>
-								{`User '${user.value}' ${info.message}`}
+								{`User '${lastSaved}' ${info.message}`}
 							</FormHelperText>
 						)}
 						<Grid
@@ -287,29 +437,41 @@ export class Register extends Component {
 								</Button>
 							</Grid>
 							<Grid item>
-								<Button type="submit" fullWidth variant="contained" color="primary">
+								<Button
+									disabled={!this.state.allValid}
+									type="submit"
+									fullWidth
+									variant="contained"
+									color="primary"
+								>
 									Register
 								</Button>
 							</Grid>
 						</Grid>
 					</form>
 				</Paper>
-			</div>
+			</Container>
 		);
 	}
 }
 
 const { errorSelector, registeredSelector } = authSelectors;
 
-export default compose(
-	withStyles(styles),
-	connect(
-		state => ({
-			registered: registeredSelector(state),
-			error: errorSelector(state)
-		}),
-		{
-			register: authOperations.register
-		}
-	)
+const mapStateToProps = state => {
+	return {
+		registered: registeredSelector(state),
+		error: errorSelector(state)
+	};
+};
+
+const mapDispatchToProps = {
+	register: authOperations.register,
+	userlist: authOperations.userlist
+};
+
+const connectedComponent = connect(
+	mapStateToProps,
+	mapDispatchToProps
 )(Register);
+
+export default withStyles(styles)(connectedComponent);

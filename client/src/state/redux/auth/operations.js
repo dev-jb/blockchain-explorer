@@ -8,6 +8,8 @@ import {
 	login as loginAction,
 	network as networkAction,
 	register as registerAction,
+	unregister as unRegisterAction,
+	userlist as userListAction,
 	error as errorAction
 } from './actions';
 
@@ -15,8 +17,8 @@ import actions from '../charts/actions';
 
 import Auth from '../../Auth';
 
-const login = ({ user, password }, network) => dispatch =>
-	post('/auth/login', { user, password, network })
+const login = ({ user, password }, networkObj) => dispatch =>
+	post('/auth/login', { user, password, network: networkObj })
 		.then(resp => {
 			Auth.authenticateUser(resp.token);
 			dispatch(errorAction(null));
@@ -33,8 +35,7 @@ const login = ({ user, password }, network) => dispatch =>
 const network = () => dispatch =>
 	get('/auth/networklist', {})
 		.then(({ networkList }) => {
-			const networks = networkList.map(network => network[0]);
-			dispatch(networkAction({ networks }));
+			dispatch(networkAction({ networks: networkList }));
 		})
 		.catch(error => {
 			// eslint-disable-next-line no-console
@@ -52,7 +53,7 @@ const register = user => dispatch =>
 					)
 				);
 			} else if (resp.status === 400) {
-				let message = resp.message;
+				const message = resp.message;
 				const msg = message.substr(6);
 				return { status: 'error', message: msg };
 			} else {
@@ -65,8 +66,71 @@ const register = user => dispatch =>
 			dispatch(errorAction(error));
 		});
 
+const userlist = () => dispatch =>
+	get('/api/userlist')
+		.then(resp => {
+			if (resp.status === 500) {
+				dispatch(
+					actions.getErroMessage(
+						'500 Internal Server Error: The server has encountered an internal error and unable to complete your request'
+					)
+				);
+			} else if (resp.status === 400) {
+				const message = resp.message;
+				const msg = message.substr(6);
+				return { status: 'error', message: msg };
+			} else {
+				dispatch(userListAction({ ...resp }));
+				return { status: 'success', message: resp };
+			}
+		})
+		.catch(error => {
+			console.error(error);
+			dispatch(errorAction(error));
+		});
+
+const unregister = user => dispatch =>
+	post('/api/unregister', { ...user })
+		.then(resp => {
+			if (resp.status === 500) {
+				dispatch(
+					actions.getErroMessage(
+						'500 Internal Server Error: The server has encountered an internal error and unable to complete your request'
+					)
+				);
+			} else if (resp.status === 400) {
+				const message = resp.message;
+				const msg = message.substr(6);
+				return { status: 'error', message: msg };
+			} else {
+				dispatch(unRegisterAction({ ...user, ...resp }));
+				return { status: 'success', message: 'Unregistered successfully!' };
+			}
+		})
+		.catch(error => {
+			console.error(error);
+			dispatch(errorAction(error));
+		});
+
+const logout = () => dispatch =>
+	post('/auth/logout', {})
+		.then(resp => {
+			console.log(resp);
+			Auth.deauthenticateUser();
+			dispatch(errorAction(null));
+			return { status: 'Success' };
+		})
+		.catch(error => {
+			console.error(error);
+			dispatch(actions.getErroMessage(error));
+			return { status: 'Error', message: 'Invalid User token' };
+		});
+
 export default {
 	login,
 	network,
-	register
+	register,
+	unregister,
+	userlist,
+	logout
 };

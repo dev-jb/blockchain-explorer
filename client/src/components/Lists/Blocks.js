@@ -128,18 +128,18 @@ export class Blocks extends Component {
 		this.setState({ selection, options: opts });
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentDidUpdate(prevProps, prevState) {
 		if (
 			this.state.search &&
-			nextProps.currentChannel !== this.props.currentChannel
+			this.props.currentChannel !== prevProps.currentChannel
 		) {
 			if (this.interval !== undefined) {
 				clearInterval(this.interval);
 			}
 			this.interval = setInterval(() => {
-				this.searchBlockList(nextProps.currentChannel);
+				this.searchBlockList(this.props.currentChannel);
 			}, 60000);
-			this.searchBlockList(nextProps.currentChannel);
+			this.searchBlockList(this.props.currentChannel);
 		}
 	}
 
@@ -389,6 +389,19 @@ export class Blocks extends Component {
 					{ threshold: matchSorter.rankings.SIMPLEMATCH }
 				),
 			filterAll: true
+		},
+		{
+			Header: 'Size(KB)',
+			accessor: 'blksize',
+			filterMethod: (filter, rows) =>
+				matchSorter(
+					rows,
+					filter.value,
+					{ keys: ['blksize'] },
+					{ threshold: matchSorter.rankings.SIMPLEMATCH }
+				),
+			filterAll: true,
+			width: 150
 		}
 	];
 
@@ -506,7 +519,7 @@ export class Blocks extends Component {
 					}}
 					minRows={0}
 					style={{ height: '750px' }}
-					showPagination={!(blockList.length < 5)}
+					showPagination={blockList.length >= 5}
 				/>
 
 				<Dialog

@@ -3,7 +3,6 @@
  */
 
 import React, { Component } from 'react';
-import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
@@ -48,14 +47,17 @@ export class App extends Component {
 		};
 	}
 
+	/* istanbul ignore next */
 	updateLoadStatus = () => {
 		this.setState({ loading: false });
 	};
 
+	/* istanbul ignore next */
 	refreshComponent = mode => {
 		this.props.changeTheme(mode);
 	};
 
+	/* istanbul ignore next */
 	render() {
 		const { auth } = this.props;
 		const { loading } = this.state;
@@ -89,14 +91,16 @@ const { changeTheme } = themeActions;
 const { errorMessageSelector } = chartSelectors;
 const { authSelector } = authSelectors;
 
-export default compose(
-	withStyles(styles),
-	connect(
-		state => ({
-			error: errorMessageSelector(state),
-			mode: modeSelector(state),
-			auth: authSelector(state)
-		}),
-		{ changeTheme }
-	)
-)(App);
+const mapStateToProps = state => {
+	return {
+		error: errorMessageSelector(state),
+		mode: modeSelector(state),
+		auth: authSelector(state)
+	};
+};
+
+const mapDispatchToProps = { changeTheme };
+
+const connectedComponent = connect(mapStateToProps, mapDispatchToProps)(App);
+/* istanbul ignore next */
+export default withStyles(styles)(connectedComponent);

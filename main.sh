@@ -18,20 +18,18 @@ function print_help() {
 
 function do_install() {
 	VERBOSE=${VERBOSE:+-ddd}
-	npm install $VERBOSE
-	(cd app/test && npm install $VERBOSE)
+	(npm install $VERBOSE && npm run build)
 	(cd client && npm install $VERBOSE && npm run build)
 }
 
 function do_test() {
-	(cd app/test && npm run test)
+	(npm run test)
 	(cd client && npm run test:ci -- -u --coverage)
 }
 
 function do_clean() {
 	rm -rf node_modules
 	rm -rf client/node_modules client/build client/coverage
-	rm -rf app/test/node_modules
 }
 
 # Get subcommand
