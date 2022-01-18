@@ -1,0 +1,99 @@
+{
+	"name": "casey-network",
+	"version": "1.0.0",
+	"license": "Apache-2.0",
+	"client": {
+		"tlsEnable": true,
+		"caCredential": {
+			"id": "ica-kilroy-bc-mainnet",
+			"password": "Ica-Kilroy-Bc-Mainnet-Pw"
+		},
+		"adminCredential": {
+			"id": "ica-kilroy-bc-mainnet",
+			"password": "Ica-Kilroy-Bc-Mainnet-Pw",
+			"affiliation": "org1.department1"
+		},
+		"enableAuthentication": true,
+		"organization": "KilroyMainnetOrg",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "300"
+				},
+				"orderer": "300"
+			}
+		}
+	},
+	"channels": {
+		"kilroy-bc-channel": {
+			"peers": {
+				"peer0.kilroy.mainnet": {},
+				"peer1.kilroy.mainnet": {},
+				"peer2.kilroy.mainnet": {}
+			},
+			"connection": {
+				"timeout": {
+					"peer": {
+						"endorser": "6000",
+						"eventHub": "6000",
+						"eventReg": "6000"
+					}
+				}
+			}
+		}
+	},
+	"organizations": {
+		"KilroyMainnetOrg": {
+			"mspid": "KilroyMainnetOrgMSP",
+			"peers": ["peer0.kilroy.mainnet","peer1.kilroy.mainnet","peer2.kilroy.mainnet"],
+			"certificateAuthorities": ["ica.kilroy.mainnet"],
+			"adminPrivateKey": {
+				"path": "./app/platform/fabric/crypto-config/peerOrganizations/peer.kilroy.mainnet/msp/keystore/key.pem"
+			},
+			"signedCert": {
+				"path": "./app/platform/fabric/crypto-config/peerOrganizations/peer.kilroy.mainnet/msp/signcerts/cert.pem"
+			}
+		}
+	},
+	"peers": {
+		"peer0.kilroy.mainnet": {
+			"tlsCACerts": {
+				"path": "./app/platform/fabric/crypto-config/peerOrganizations/peer.kilroy.mainnet/peers/peer0.kilroy.mainnet/tls/tlscacerts/tls-localhost-7054.pem"
+			},
+			"url": "grpcs://129.146.138.174:7051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.kilroy.mainnet"
+			}
+		},
+        "peer1.kilroy.mainnet": {
+			"tlsCACerts": {
+				"path": "./app/platform/fabric/crypto-config/peerOrganizations/peer.kilroy.mainnet/peers/peer1.kilroy.mainnet/tls/tlscacerts/tls-localhost-7054.pem"
+			},
+			"url": "grpcs://129.146.138.174:8051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer1.kilroy.mainnet"
+			}
+		},
+        "peer2.kilroy.mainnet": {
+			"tlsCACerts": {
+				"path": "./app/platform/fabric/crypto-config/peerOrganizations/peer.kilroy.mainnet/peers/peer2.kilroy.mainnet/tls/tlscacerts/tls-localhost-7054.pem"
+			},
+			"url": "grpcs://129.146.138.174:9051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer2.kilroy.mainnet"
+			}
+		}
+	},
+	"certificateAuthorities": {
+		"ica.kilroy.mainnet": {
+			"url": "https://129.146.138.174:7054",
+			"httpOptions": {
+				"verify": false
+			},
+			"tlsCACerts": {
+				"path": "./app/platform/fabric/crypto-config/ica-kilroy-bc-mainnet-server/ca-cert.pem"
+			},
+			"caName": "ica.kilroy.mainnet"
+		}
+	}
+}

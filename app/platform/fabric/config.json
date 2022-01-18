@@ -2,7 +2,7 @@
 	"network-configs": {
 		"casey-network": {
 			"name": "casey-network",
-			"profile": "./connection-profile/casey-network.json"
+			"profile": "./connection-profile/casey-network-multi-node.json"
 		}
 	},
 	"license": "Apache-2.0"
