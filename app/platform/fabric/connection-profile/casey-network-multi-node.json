@@ -78,7 +78,7 @@
 			"tlsCACerts": {
 				"path": "./app/platform/fabric/crypto-config/peerOrganizations/peer.kilroy.mainnet/peers/peer2.kilroy.mainnet/tls/tlscacerts/tls-localhost-7054.pem"
 			},
-			"url": "grpcs://129.146.138.174:9051",
+			"url": "grpcs://129.146.239.243:9051",
 			"grpcOptions": {
 				"ssl-target-name-override": "peer2.kilroy.mainnet"
 			}
