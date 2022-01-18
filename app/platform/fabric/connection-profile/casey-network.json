@@ -1,0 +1,73 @@
+{
+	"name": "casey-network",
+	"version": "1.0.0",
+	"license": "Apache-2.0",
+	"client": {
+		"tlsEnable": true,
+		"caCredential": {
+			"id": "kilroyblockchain",
+			"password": "kilroyblockchainpw"
+		},
+		"adminCredential": {
+			"id": "kilroyblockchain",
+			"password": "kilroyblockchainpw",
+			"affiliation": "org1.department1"
+		},
+		"enableAuthentication": true,
+		"organization": "kilroyblockchain",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "300"
+				},
+				"orderer": "300"
+			}
+		}
+	},
+	"channels": {
+		"casey-saas-channel": {
+			"peers": {
+				"peer.kilroyblockchain.casey.health": {}
+			},
+			"connection": {
+				"timeout": {
+					"peer": {
+						"endorser": "6000",
+						"eventHub": "6000",
+						"eventReg": "6000"
+					}
+				}
+			}
+		}
+	},
+	"organizations": {
+		"kilroyblockchain": {
+			"mspid": "kilroyblockchainMSP",
+			"peers": ["peer.kilroyblockchain.casey.health"],
+			"certificateAuthorities": ["intermediate.ca.kilroyblockchain.casey.health"]
+		}
+	},
+	"peers": {
+		"peer.kilroyblockchain.casey.health": {
+			"tlsCACerts": {
+				"path": "./app/platform/fabric/crypto-config/peer.kilroyblockchain.casey.health/tls-msp/tlsintermediatecerts/tls-0-0-0-0-7054.pem"
+			},
+			"url": "grpcs://152.70.139.73:7051",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer.kilroyblockchain.casey.health"
+			}
+		}
+	},
+	"certificateAuthorities": {
+		"intermediate.ca.kilroyblockchain.casey.health": {
+			"url": "https://152.70.139.73:7054",
+			"httpOptions": {
+				"verify": false
+			},
+			"tlsCACerts": {
+				"path": "./app/platform/fabric/crypto-config/intermediate.ca.kilroyblockchain.casey.health/ca-cert.pem"
+			},
+			"caName": "intermediate.ca.kilroyblockchain.casey.health"
+		}
+	}
+}

@@ -4,9 +4,9 @@
 	"postgreSQL": {
 		"host": "127.0.0.1",
 		"port": "5432",
-		"database": "fabricexplorer",
-		"username": "hppoc",
-		"passwd": "password"
+		"database": "casey",
+		"username": "caseyuser",
+		"passwd": "Casey@123"
 	},
 	"sync": {
 		"type": "local",
