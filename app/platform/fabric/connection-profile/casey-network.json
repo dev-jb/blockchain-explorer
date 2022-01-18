@@ -44,7 +44,13 @@
 		"kilroyblockchain": {
 			"mspid": "kilroyblockchainMSP",
 			"peers": ["peer.kilroyblockchain.casey.health"],
-			"certificateAuthorities": ["intermediate.ca.kilroyblockchain.casey.health"]
+			"certificateAuthorities": ["intermediate.ca.kilroyblockchain.casey.health"],
+			"adminPrivateKey": {
+				"path": "./app/platform/fabric/crypto-config/intermediate.ca.kilroyblockchain.casey.health/msp/keystore/key.pem"
+			},
+			"signedCert": {
+				"path": "./app/platform/fabric/crypto-config/intermediate.ca.kilroyblockchain.casey.health/msp/signcerts/cert.pem"
+			}
 		}
 	},
 	"peers": {
